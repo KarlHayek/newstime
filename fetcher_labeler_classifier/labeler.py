@@ -18,6 +18,9 @@ class Labeler:
         self.client = textrazor.TextRazor(extractors=["topics", "entities"])  #instance of TextRazor class
         self.list = []
 
+    # Rev: what does "print" in the function name mean? The function doesn't print anything, it calls the textrazor api and extracts information from it.
+    # Rev: self.list is a list of strings that contain the extracted information. It can be replaced with a single string Extract that contains all the information,
+    # instead of a list of strings. Or even better, a dictionary can be used, which can then be easily written as a JSON file.
     def extractAndPrint(self, url):
         self.response = self.client.analyze_url(url)
 
