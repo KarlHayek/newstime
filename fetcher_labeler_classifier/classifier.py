@@ -14,6 +14,8 @@ class Classifier():
     def __init__(self):
         pass
 
+    # Rev: Read JSON files instead of .txt files, for easier and faster access
+    # Rev: From what I understood, this function takes as parameters two outputs from textrazor calls on differnet article links. The variable names should be made more clear.
     def readAndCompare(self, list1, list2):
 
         if (list1[0] != "#TOPICS"):
@@ -21,6 +23,7 @@ class Classifier():
         if (list2[0] != "#TOPICS"):
             print("wrong file2")
 
+        # Rev: this comparison is computationally expensive. Using JSON may help speed it up
         # scan topics to look for common words. #ENTITIES string signals end of topics sublist
         for line1 in list1:
             if(line1 == "#ENTITIES"):
@@ -54,9 +57,11 @@ class Classifier():
         self.topicsWeight = topWeight
 
 
+
 # list1 = ["#TOPICS", "beer", "titties"]
 # list2 = ["beer", "#TOPICS", "titties"]
 
+# Rev: remove old code, it's useless
 
 #############   OLD CODE   ###############
 
