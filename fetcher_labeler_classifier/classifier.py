@@ -44,7 +44,7 @@ class Classifier():
                 if(line1 == line2):
                     self.score += self.topicsWeight
 
-        # update similatir score according to preset weights
+        # update similarity score according to preset weights
         if self.score > self.scoreThreshold:
             print("\n \n same story")
         else:
