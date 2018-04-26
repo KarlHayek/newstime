@@ -1,13 +1,18 @@
+{{#if timelines}}
 <p>Click on a timeline to view its events</p>
 
+{{else}}
+<p>No timelines listed</p>
+{{/if}}
+
+{{#if searchResponse}}
+<p>{{searchResponse}}</p>
+{{/if}}
+
 {{#each timelines}}
-<div class="card card-body mb-3 timeline-card">
+<div class="card card-body mb-3 timeline-card timeline-index">
     <a href="/timelines/show/{{id}}"></a>
     <h4>{{title}}</h4>
     <p>{{details}}</p>
 </div>
- 
-
-{{else}}
-<p>No timelines listed</p>
 {{/each}}
