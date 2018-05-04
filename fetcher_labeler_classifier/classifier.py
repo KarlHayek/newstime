@@ -45,12 +45,12 @@ class Classifier():
                     self.score += self.topicsWeight
 
         # update similarity score according to preset weights
-        if self.score > self.scoreThreshold:
-            print("\n \n same story")
-        else:
-            print("\n \n different story")
-        print("similarity score: ")
-        print(self.score)
+        # if self.score > self.scoreThreshold:
+        #     print("\n \n same story")
+        # else:
+        #     print("\n \n different story")
+        # print("similarity score: ")
+        return self.score
 
     def setWeights(self, entWeight, topWeight):
         self.entitiesWeight = entWeight
