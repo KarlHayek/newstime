@@ -16,7 +16,11 @@ const TimelineSchema = new Schema({
     date_created: {
         type: Date,
         default: Date.now
-    }
+    },
+    labels: [{
+        label: String,
+        score: String
+    }]
 
 });
 

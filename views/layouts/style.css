@@ -1,9 +1,15 @@
-.timeline-card > a {
+.timeline-index > a {
     position: absolute;
     top: 0; left: 0;
     height: 100%; width: 100%;
 }
 
-.timeline-card:hover { 
+.timeline-index:hover { 
     background: rgba(22, 63, 245, 0.089);
+}
+
+/* .form-control{ */
+#search{
+    /* float: right;
+    width: 38%; */
 }

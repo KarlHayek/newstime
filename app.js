@@ -38,14 +38,27 @@ app.get('/', (req, res) => {
 
 // Timeline Index Page
 app.get('/timelines', (req, res) => {
-    Timeline.find({})
+    var query = {};
+    var searchResponse = "";
+    if (req.query.search) {
+        // case insensitive title search
+        // query = { title: new RegExp(req.query.search, "i") };
+        query = { title: { '$regex': req.query.search, '$options': 'i' }}
+    }
+    Timeline.find(query)
         .sort({date: 'desc'})
         .then(timelines => {
+            if (req.query.search) {
+                searchResponse = `Found ${timelines.length} search results for '${req.query.search}':`;
+            }
             res.render('timelines/index', {
-                timelines: timelines
+                timelines: timelines,
+                searchResponse: searchResponse
             });
         })
 })
+
+
 
 // Show Timeline Route
 app.get('/timelines/show/:id', (req, res) => {
