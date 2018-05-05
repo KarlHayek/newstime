@@ -10,11 +10,18 @@ import json
 #
 # l1.printJSON()
 
-database = {'Story': {'StoryKeywords':[],
-                         'ArticleIDs':[]},
-         'Articles': {'ArticleKeywords':[],
-                        'ArticleURL':[]}}
+# created some dicts
+database = {'Stories':[],
+           'Articles':[]}
 
+story1 = {'keywords':[],    # these are instances of dicts, not declarations
+       'articleIDs':[],
+               'ID': ""}
+
+article1 = {'keywords':[],
+                 'ID': ""}
+
+# saw if i could append lists and strings to the dicts, turns out i can
 storyKeywordsList = []
 storyKeywordsList.extend(("mexico", "wall", "trump"))
 
@@ -26,11 +33,22 @@ articleKeywordsList.extend(("mexico", "l'amour"))
 
 articleURL = "www.fairelamourtoutseul.com"
 
-database['Story']['StoryKeywords'].append(storyKeywordsList)
-database['Story']['ArticleIDs'].append(articleIDList)
-database['Articles']['ArticleKeywords'].append(articleKeywordsList)
-database['Articles']['ArticleURL'].append(articleURL)
+story1['keywords'].append(storyKeywordsList)
+story1['articleIDs'].append(articleIDList)
+story1['ID'] = 20
 
-with open('labels.json', 'w') as outfile:
-    json.dump(database, outfile)
-print (json.dumps(database, indent=4))
+# created another "instance of a story" (although there is no 'story' abstraction in the code, only in our imagination)
+story2 = {'keywords':["frank"],
+        'articleIDs':[1,2,3],
+                'ID': "21"}
+
+database['Stories'].append(story1)
+database['Stories'].append(story2)
+
+database['Stories'][1]['keywords'] = "farid"        # uf!
+
+print(database['Stories'])
+
+# with open('labels.json', 'w') as outfile:
+#     json.dump(database, outfile)
+# print (json.dumps(database, indent=4))

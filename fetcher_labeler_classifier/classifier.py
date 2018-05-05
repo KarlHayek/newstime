@@ -16,7 +16,7 @@ class Classifier():
 
     # Rev: Read JSON files instead of .txt files, for easier and faster access
     # Rev: From what I understood, this function takes as parameters two outputs from textrazor calls on differnet article links. The variable names should be made more clear.
-    def readAndCompare(self, list1, list2):
+    def getSimilarityScore(self, list1, list2):
 
         if (list1[0] != "#TOPICS"):
             print("wrong file1")
@@ -44,22 +44,12 @@ class Classifier():
                 if(line1 == line2):
                     self.score += self.topicsWeight
 
-        # update similarity score according to preset weights
-        # if self.score > self.scoreThreshold:
-        #     print("\n \n same story")
-        # else:
-        #     print("\n \n different story")
-        # print("similarity score: ")
         return self.score
 
     def setWeights(self, entWeight, topWeight):
         self.entitiesWeight = entWeight
         self.topicsWeight = topWeight
 
-
-
-# list1 = ["#TOPICS", "beer", "titties"]
-# list2 = ["beer", "#TOPICS", "titties"]
 
 # Rev: remove old code, it's useless
 
