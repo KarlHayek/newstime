@@ -5,25 +5,21 @@
 
 import math
 
-class Classifier():
 
-    topicsWeight = 0.1
+topicsWeight = 0.1
 
-    def __init__(self):
-        pass
+def getSimilarityScore(topics_list1, topics_list2):
 
-    def getSimilarityScore(self, dict1, dict2):
+    s = 0
+    for topic1 in topics_list1:
+        for topic2 in topics_list2:
+            if(topic1 == topic2):
+                s += topicsWeight   # multiply by topic confidence score
 
-        s = 0
-        for topic1 in dict1['topics']:
-            for topic2 in dict2['topics']:
-                if(topic1 == topic2):
-                    s += self.topicsWeight   # multiply by topic confidence score
+    l = len(topics_list1)
+    s = s / (l * (topicsWeight))       # normalize the scores
+    return '%.3f'%(s)
 
-        l = len(dict1['topics'])
-        s = s / (l * (self.topicsWeight))       # normalize the scores
-        return '%.3f'%(s)
 
-    def setWeights(self, entWeight, topWeight):
-
-        self.topicsWeight = topWeight
+def classifyTimelinefromArticles(timeline):
+    print("ASD")

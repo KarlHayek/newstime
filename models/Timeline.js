@@ -17,11 +17,9 @@ const TimelineSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    labels: [{
-        label: String,
-        score: String
+    topics: [{
+        type: String
     }]
-
 });
 
 const Timeline = mongoose.model('timelines', TimelineSchema)

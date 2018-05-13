@@ -11,13 +11,16 @@ const ArticleSchema = new Schema({
         type: String,
         required: true
     },
-    // story: {
+    // stories: [{
     //     type: Schema.Types.ObjectId, ref: 'Story'
-    // },
-    date_added: {
+    // }],
+    date_event: {
         type: Date,
         default: Date.now
-    }
+    },
+    topics: [{
+        type: String
+    }]
 
 });
 
