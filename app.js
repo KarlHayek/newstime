@@ -25,11 +25,10 @@ const Article = mongoose.model('articles')
 app.engine('handlebars', exphbs({
     defaultLayout: 'main'
 }));
+
 app.set('view engine', 'handlebars')
 
 app.use(express.static(__dirname)); // for including the css file
-
-
 
 // Index Route
 app.get('/', (req, res) => {
@@ -53,6 +52,7 @@ app.get('/timelines', (req, res) => {
             if (req.query.search) {
                 searchResponse = `Found ${timelines.length} search results for '${req.query.search}':`;
             }
+            timelines.forEach(timeline => { timeline.topics = timeline.topics.slice(0,10) })
             res.render('timelines/index', {
                 timelines: timelines,
                 searchResponse: searchResponse

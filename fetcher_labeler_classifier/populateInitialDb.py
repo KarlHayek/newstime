@@ -7,26 +7,38 @@ db = MongoClient('mongodb://localhost:27017')['newstime-dev']
 # connect to production database
 # db = MongoClient('mongodb://karl:karl@ds129428.mlab.com:29428')['newstime-prd')
 
+db.articles.remove({})
+db.timelines.remove({})
+db.waitlist.remove({})
+
+
 articleLinksPerTimeline = [
     [
         "https://www.washingtontimes.com/news/2018/apr/12/donald-trumps-wall-is-getting-push-back-from-congr/",
-        "https://www.cnn.com/2018/05/12/politics/washington-lobbying-trump-era/index.html"
+        "https://www.cnn.com/2018/05/12/politics/washington-lobbying-trump-era/index.html",
+        "https://www.theguardian.com/world/2018/may/13/us-sanctions-european-countries-iran-deal-donald-trump",
+        "https://www.theatlantic.com/magazine/archive/2017/10/will-donald-trump-destroy-the-presidency/537921/",
     ],
     [
-        "https://www.vox.com/policy-and-politics/2018/4/11/17225518/mark-zuckerberg-testimony-facebook-privacy-settings-sharing"
+        "https://www.vox.com/policy-and-politics/2018/4/11/17225518/mark-zuckerberg-testimony-facebook-privacy-settings-sharing",
+        "https://www.wired.com/story/mark-zuckerberg-plays-the-scapegoat-for-our-facebook-sins",
+        "https://www.telegraph.co.uk/technology/2018/04/17/facebook-quietly-stopped-apps-harvesting-users-private-data",
     ]
 ]
 
 newTimelines = [
     {
-        'title': "Trump Wall",
-        'details': "Events related to the wall that President Trump wants to erect in the US-Mexico border"
+        'title': "Donald Trump Presidency",
+        'details': "Events related to President Drumpf's presidency"
     },
     {
         'title': "The Zucc",
         'details': "The adventures Marc Zuckerberg"
     }
 ]
+
+
+
 
 index = 0
 for timeline in newTimelines:
@@ -43,8 +55,12 @@ for timeline in newTimelines:
         # add the article's id to the timeline's list of articles
         timeline["articles"].append(article_id)
     
+    # get the timeline's articles
+    articles = db.articles.find( { '_id': {'$in': timeline['articles']} })
+
     # set the timeline's topics from its articles
-    timeline["topics"] = classifier.getTimelineTopicsFromArticles(timeline)
+    timeline["topics"] = classifier.getTimelineTopicsFromArticles(articles)
+    # print(timeline['topics'])
 
     # add the timeline to the timelines collection
     db.timelines.insert_one(timeline)
@@ -52,3 +68,8 @@ for timeline in newTimelines:
     index+=1
 
 print("Done")
+
+# tl = db.timelines.find_one()
+# articles = db.articles.find({'_id': {'$in': tl['articles']}})
+# topics = classifier.getTimelineTopicsFromArticles(articles)
+# print(topics)
