@@ -8,18 +8,21 @@ import math
 
 topicsWeight = 0.1
 
-def getSimilarityScore(topics_list1, topics_list2):
+def getSimilarityScore(topics1, topics2, topic_scores1 = [], topic_scores2 = []):
 
     s = 0
-    for topic1 in topics_list1:
-        for topic2 in topics_list2:
+    for topic1 in topics1:
+        for topic2 in topics2:
             if(topic1 == topic2):
                 s += topicsWeight   # multiply by topic confidence score
 
-    l = len(topics_list1)
+    l = len(topics1)
     s = s / (l * (topicsWeight))       # normalize the scores
     return '%.3f'%(s)
 
 
-def classifyTimelinefromArticles(timeline):
-    print("ASD")
+
+def getTimelineTopicsFromArticles(timeline):
+    topics = []
+    
+    return topics

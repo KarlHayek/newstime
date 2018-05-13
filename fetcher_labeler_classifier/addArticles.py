@@ -21,17 +21,16 @@ links = [
 for link in links:
     # feed the link to textrazor and make an article object from it
     article = labeler.extractIntoArticle(link)
+    # add the article to the articles collection
+    article_id = db.articles.insert_one(article).inserted_id
 
+    for timeline in db.timelines.find():
+        # compare the article's topics to timeline's topics
+        similarity = classifier.getSimilarityScore(
+            article['topics'], timeline['topics'], article['topic_scores'], timeline['topic_scores'])
 
-    # # insert the article in the database
-    # article_id = db.articles.insert_one(article).inserted_id
-
-    # for timeline in db.timelines.find():
-    #     ## compare the article's labels to timeline's
-    #     #...
-
-    #     #if the correlation is high enough, add the article to the timeline
-    #     if 1:
-    #         timeline['articles'].append(article_id)
-    #         db.timelines.update_one({'_id': timeline['_id']}, {
-    #                                 "$set": timeline}, upsert=False)
+        #if the correlation is high enough, add the article to the timeline
+        if similarity > 0.38:   # magic number
+            timeline['articles'].append(article_id)
+            db.timelines.update_one({'_id': timeline['_id']}, {
+                                    "$set": timeline}, upsert=False)

@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import labeler
+import labeler, classifier
 labeler = labeler.Labeler()
 
 # connect to local database
@@ -36,11 +36,17 @@ for timeline in newTimelines:
     for link in articleLinksPerTimeline[index]:
         # feed the link to textrazor and make an article object from it
         article = labeler.extractIntoArticle(link)
-        #insert the article in the database
+
+        # add the article to the articles collection
         article_id = db.articles.insert_one(article).inserted_id
         
+        # add the article's id to the timeline's list of articles
         timeline["articles"].append(article_id)
     
+    # set the timeline's topics from its articles
+    timeline["topics"] = classifier.getTimelineTopicsFromArticles(timeline)
+
+    # add the timeline to the timelines collection
     db.timelines.insert_one(timeline)
     print("finished timeline", index)
     index+=1

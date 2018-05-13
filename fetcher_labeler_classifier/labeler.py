@@ -6,9 +6,6 @@ from bs4 import BeautifulSoup
 textrazor.api_key = "5634740d9e8d89a14374edaa305c207bd6eda5918bbe233634beb092"
 
 class Labeler:
-
-    howManyTopics = 50
-
     def __init__(self):
         self.client = textrazor.TextRazor(extractors=["topics"])  #instance of TextRazor class
 
@@ -16,7 +13,7 @@ class Labeler:
         article = {
             'link': url,
             'title': self.getTitle(url),
-            'topics':[]
+            'topics':[],
             'topic_scores': []
         }
 
@@ -31,7 +28,7 @@ class Labeler:
         return article
 
     def getTitle(self, url):
-        raw = self.client.set_cleanup_return_raw(True)
+        self.client.set_cleanup_return_raw(True)
         raw_text = self.client.analyze_url(url).raw_text
         soup = BeautifulSoup(raw_text, "lxml")
         return soup.title.string

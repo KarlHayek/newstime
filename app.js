@@ -41,9 +41,11 @@ app.get('/timelines', (req, res) => {
     var query = {};
     var searchResponse = "";
     if (req.query.search) {
-        // case insensitive title search
-        // query = { title: new RegExp(req.query.search, "i") };
-        query = { title: { '$regex': req.query.search, '$options': 'i' }}
+        // case insensitive title and topic search
+        query = {$or: [
+                {title: new RegExp(req.query.search, "i")},
+                {topics: new RegExp(req.query.search, "i")}
+            ]}
     }
     Timeline.find(query)
         .sort({date: 'desc'})

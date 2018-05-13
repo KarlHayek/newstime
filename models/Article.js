@@ -20,6 +20,9 @@ const ArticleSchema = new Schema({
     },
     topics: [{
         type: String
+    }],
+    topic_scores: [{
+        type: Number
     }]
 
 });

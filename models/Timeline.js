@@ -19,6 +19,9 @@ const TimelineSchema = new Schema({
     },
     topics: [{
         type: String
+    }],
+    topic_scores: [{
+        type: Number
     }]
 });
 
