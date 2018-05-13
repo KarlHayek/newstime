@@ -12,8 +12,8 @@ const Article = mongoose.model('articles')
 // Map global promise - get rid of warning
 mongoose.Promise = global.Promise
 // Connect to mongoose
-mongoose.connect('mongodb://localhost/newstime-dev')
-// mongoose.connect('mongodb://karl:karl@ds129428.mlab.com:29428/newstime-prd')
+// mongoose.connect('mongodb://localhost/newstime-dev')
+mongoose.connect('mongodb://karl:karl@ds129428.mlab.com:29428/newstime-prd')
     .then(() => console.log('MongoDB Connected...'))
     .catch(err => console.log(err));
 

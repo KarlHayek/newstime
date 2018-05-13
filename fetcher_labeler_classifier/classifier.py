@@ -1,7 +1,4 @@
 # The classifier takes two lists of labels extracted by the labeler and decided whether they belong to the same news story or not.
-# TODO:
-# - figure out a good weight assignment
-# - keep track of scores output by textrazor
 
 import math
 from collections import OrderedDict

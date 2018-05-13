@@ -5,7 +5,8 @@ labeler = labeler.Labeler()
 # connect to local database
 db = MongoClient('mongodb://localhost:27017')['newstime-dev']
 # connect to production database
-# db = MongoClient('mongodb://karl:karl@ds129428.mlab.com:29428')['newstime-prd')
+# db = MongoClient('mongodb://ds129428.mlab.com:29428/')['newstime-prd']
+# db.authenticate('karl', 'karl') # username and passw
 
 db.articles.remove({})
 db.timelines.remove({})
@@ -33,7 +34,7 @@ newTimelines = [
     },
     {
         'title': "The Zucc",
-        'details': "The adventures Marc Zuckerberg"
+        'details': "The adventures of Marc Zuckerberg"
     }
 ]
 
