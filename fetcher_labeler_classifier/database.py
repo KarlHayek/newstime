@@ -1,27 +1,26 @@
 # the database is a weighed undirected graph where each node is an article and the edge weights represent the "similarity score"
 # between two articles (computed by the classifier)
 
-# start by writing every function in pseudocode
+#TODO
+# - find a way to select the story's keywords from the article keywords
+# - fix and test 'add article to story'
 
-import json, classifier
+import json, classifier, pprint
 
 class Story():
 
-    def __init__(self):
-        self.storyKeywords = []     # most frequent keywords in articles
-        self.articlesList = []
+    def __init__(self, keywordsDict = []):
+        self.storyKeywords = keywordsDict       # most frequent keywords among article keywords
+        self.articles = []                  # list of articles that belong to the story
         self.id = 0
 
 class Article():
 
-    def __init__(self):
-        self.articleKeywords = []
-        self.articleURL = ""
-        self.index = 0
-        self.pageRank = 0
+    def __init__(self, keywordsDict, url = ""):
+        self.articleKeywords = keywordsDict         # keywords output by the labeler including article url)
+        self.index = 0                          # unique number that identifies article
 
 class Database():
-
     db = {'Stories':[],
          'Articles':[],
          'WaitList':[]}
@@ -36,56 +35,51 @@ class Database():
         for i in self.weightMatrix:
             print(i)
 
-    def addArticle(self, newArticle):
-        db['Articles'].append(newArticle)
-        maxIndex += 1
-        newArticle.index = maxIndex
+    def addArticle(self, newArticle):           # adds an instance of Article to the DB, updates the weightMatrix accordingly
+        Clas = classifier.Classifier()
+        self.db['Articles'].append(newArticle)
+        newArticle.index = self.maxIndex
+        self.maxIndex += 1
         newRow = []
         count = 0
 
-        if(not bool(db['Stories'])):
-
-            for art in db['Articles']:
+        if(not bool(self.db['Stories'])):      # if there are no stories, put the article in the waitlist and update the weightMatrix
+            self.db['WaitList'].append(newArticle)
+            for art in self.db['Articles']:
                 if(art == newArticle):
-                    newRow[count] = 0
-                else:
-                    newRow[count] = classifier.Classifier.getSimilarityScore(newArticle.articleKeywords, art.articleKeywords)
-                weightMatrix[count].append(newRow[count])
-                count += 1
-            newRow.append(0)
-            weightMatrix.append(newRow)
+                    newRow.append(0)
+                else:                           # find the similarity score between the new article and every other article
+                    newRow.append(Clas.getSimilarityScore(newArticle.articleKeywords, art.articleKeywords))
+                if(len(self.weightMatrix) > 0 and count < len(self.weightMatrix)):
+                    self.weightMatrix[count].append(newRow[count])
+                    count += 1
+            self.weightMatrix.append(newRow)
 
-        else:
-            maxSimilarity = 0
-            bestStory = Story()
+        # else:
+        #     maxSimilarity = 0
+        #     bestStory = Story()
+        #
+        #     for story in self.db['Stories']:
+        #         s = Clas.getSimilarityScore(story.storyKeywords, newArticle.articleKeywords)
+        #         if(s > maxSimilarity):
+        #             maxSimilarity = s
+        #             bestStory = story
+        #     bestStory.articlesList.append(newArticle)    # add the article to the story with which it has highest keyword similarity
+        #
+        #     for art in bestStory.articlesList:
+        #         for i in range(len(self.weightMatrix)):
+        #             if(i == art.index):               # fill in similarity score only for articles inside the story
+        #                 newRow.append(Clas.getSimilarityScore(newArticle.articleKeywords, art.articleKeywords))
+        #             else:
+        #                 newRow.append(0)
+        #             self.weightMatrix[i].append(newRow[i])
+        #     newRow.append(0)
+        #     self.weightMatrix.append(newRow)
 
-            for story in db['Stories']:
-                s = classifier.Classifier.getSimilarityScore(story.storyKeywords, newArticle.articleKeywords)
-                if(s > maxSimilarity):
-                    maxSimilarity = s
-                    bestStory = story
-            bestStory.articlesList.append(newArticle)    # add the article to the story with which it has highest keyword similarity
-
-            for art in bestStory.articlesList:
-                for i in range(len(weightMatrix)):
-                    if(i == art.index):               # fill in similarity score only for articles inside the story
-                        newRow[i] = classifier.Classifier.getSimilarityScore(newArticle.articleKeywords, art.articleKeywords)
-                    else:
-                        newRow[i] = 0
-                    weightMatrix[i].append(newRow[i])
-            newRow.append(0)
-            weightMatrix.append(newRow)
-
-        # call updateStories
 
     def search(self, keywordList):
 
-        tempList = ["#TOPICS"]
-        tempList.append(keywordList)
-        tempList.append("#ENTITIES")
-        tempList.append(keywordList)
-        tempList.append("#END")
-        maxSimilarity = 0
+        tempList = {'topics':keywordList}
         bestStory = Story()
 
         for story in db['Stories']:
@@ -96,9 +90,13 @@ class Database():
 
         return bestStory
 
-    def updateStories(self):
-        
-
+    def removeWeakEdges(self, threshold):  # removes all edges (sets weightMatrix entries to zero) in the waitlist that are less than threshold
+        sparseMatrix = self.weightMatrix
+        for art1 in self.db['WaitList']:
+            for art2 in self.db['WaitList']:
+                if (sparseMatrix[art1.index][art2.index] < threshold):
+                    sparseMatrix[art1.index][art2.index] = 0;
+        return sparseMatrix
 
 
 
@@ -106,7 +104,7 @@ class Database():
 # article format: article1 = {'keywords':[],
 #                                   'ID': ""}
 # the format will be changed, probably to add a "date" element later on for timeline sorting.
-# If a new article is similar to a story it is added to it. if there are no stories yet, a similarity score if computed between the new article
+# If a new article is similar to a story it is added to it. if there are no stories yet, a similarity score is computed between the new article
 # and all existing articles. if there are stories, but the new article belongs to none of them, it is added to the 'waitlist'. The rule
 # that governs which articles belong together in a story should be exclusive enough that the waitlist never shrinks to zero, and generous
 # enough that there is always a healthy amount of stories.

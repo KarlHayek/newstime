@@ -1,62 +1,28 @@
 import labeler
 import classifier
-import database
+import database as db
 import json
 
 
-# l1 = labeler.Labeler()
-# list1 = l1.extractIntoList("http://money.cnn.com/2018/03/21/technology/mark-zuckerberg-cambridge-analytica-response/index.html")
-# print(list1)
-# print("\n")
-#
-# l1.printJSON()
-database.Database.weightMatrix.append([1, 2, 3])
-database.Database.weightMatrix.append([1, 2, 3])
-database.Database.weightMatrix.append([1, 2, 3])
+l1 = labeler.Labeler()
+db1 = db.Database()
 
-d = database.Database()
-d.printMatrix()
+links = [
+    "http://money.cnn.com/2018/03/21/technology/mark-zuckerberg-cambridge-analytica-response/index.html",
+    "https://www.usatoday.com/story/tech/2018/03/21/facebook-ceo-mark-zuckerberg-finally-speaks-cambridge-analytica-we-need-fix-breach-trust/445791002/",
+    "https://www.theguardian.com/world/2018/may/09/iran-fires-20-rockets-syria-golan-heights-israel",
+    "https://www.theguardian.com/uk-news/2018/mar/31/catalan-carla-ponsati-crowdfunding-scotland-spain",
+    "https://edition.cnn.com/2018/05/11/middleeast/iran-israel-syria-intl/index.html",
+    "https://www.cnbc.com/2018/03/16/facebook-bans-cambridge-analytica.html"
+]
+for link in links:
+    art = l1.extractIntoArticle(link)
+    # print (art.articleKeywords["TOPICS"][0])
+    db1.addArticle(art)
 
 
-# created some dicts
-
-# database = {'Stories':[],
-#            'Articles':[]}
-#
-# story1 = {'keywords':[],    # these are instances of dicts, not declarations
-#        'articleIDs':[],
-#                'ID': ""}
-#
-# article1 = {'keywords':[],
-#                  'ID': ""}
-#
-# # saw if i could append lists and strings to the dicts, turns out i can
-# storyKeywordsList = []
-# storyKeywordsList.extend(("mexico", "wall", "trump"))
-#
-# articleIDList = []
-# articleIDList = [1,7,3,67]
-#
-# articleKeywordsList = []
-# articleKeywordsList.extend(("mexico", "l'amour"))
-#
-# articleURL = "www.fairelamourtoutseul.com"
-#
-# story1['keywords'].append(storyKeywordsList)
-# story1['articleIDs'].append(articleIDList)
-# story1['ID'] = 20
-#
-# # created another "instance of a story" (although there is no such abstraction in the code, only in our imagination)
-# story2 = {'keywords':["frank"],
-#         'articleIDs':[1,2,3],
-#                 'ID': "21"}
-#
-# database['Stories'].append(story1)
-# database['Stories'].append(story2)
-#
-# database['Stories'][1]['keywords'] = "farid"        # uf!
-
+db1.printMatrix()
 
 # with open('labels.json', 'w') as outfile:
-#     json.dump(database, outfile)
-# print (json.dumps(database, indent=4))
+#     json.dump(list1, outfile)
+# print (json.dumps(list1, indent=4))
