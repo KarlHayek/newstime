@@ -10,7 +10,7 @@ db = MongoClient('mongodb://localhost:27017')['newstime-dev']
 
 db.articles.remove({})
 db.timelines.remove({})
-db.waitlist.remove({})
+# db.waitlist.remove({})
 
 
 articleLinksPerTimeline = [

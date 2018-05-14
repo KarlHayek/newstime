@@ -14,7 +14,8 @@ class Labeler:
             'link': url,
             'title': self.getTitle(url),
             'topics':[],
-            'topic_scores': []
+            'topic_scores': [],
+            'waitlisted': False,
         }
 
         self.response = self.client.analyze_url(url)

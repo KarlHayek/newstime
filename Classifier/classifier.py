@@ -5,7 +5,10 @@ from collections import OrderedDict
 
 topicsWeight = 0.1
 
-def getSimilarityScore(topics1, topics2, topic_scores1 = [], topic_scores2 = []):
+def getSimilarityScore(topics1, topics2, topic_scores1=[], topic_scores2=[]):
+    if len(topics1) == 0 or len(topics2) == 0:
+        print("Error: one of the passed topics arrays is empty!")
+        return
 
     score = 0
     for topic1 in topics1:
@@ -13,9 +16,7 @@ def getSimilarityScore(topics1, topics2, topic_scores1 = [], topic_scores2 = [])
             if(topic1 == topic2):
                 score += topicsWeight   # multiply by topic confidence score
 
-    l = len(topics1)
-    score = score / (l * (topicsWeight))       # normalize the scores
-    # return '%.3f'%(s)
+    score = score / (len(topics1) * (topicsWeight))       # normalize the scores
     return score
 
 
