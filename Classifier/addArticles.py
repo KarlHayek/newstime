@@ -1,34 +1,23 @@
 from pymongo import MongoClient
-import labeler, classifier
+import labeler, classifier, database
 labeler = labeler.Labeler()
-
-# connect to local database
-db = MongoClient('mongodb://localhost:27017')['newstime-dev']
-# connect to production database
-# db = MongoClient('mongodb://ds129428.mlab.com:29428/')['newstime-prd']
-# db.authenticate('karl', 'karl') # username and passw
+db = database.Database()
 
 # articles to add
 links = [
     # "http://money.cnn.com/2018/03/21/technology/mark-zuckerberg-cambridge-analytica-response/index.html",
     # "https://www.usatoday.com/story/tech/2018/03/21/facebook-ceo-mark-zuckerberg-finally-speaks-cambridge-analytica-we-need-fix-breach-trust/445791002/",
-    # "https://www.cnbc.com/2018/03/16/facebook-bans-cambridge-analytica.html"
-    # "https://www.theguardian.com/uk-news/2018/mar/31/catalan-carla-ponsati-crowdfunding-scotland-spain",
+    "https://www.cnbc.com/2018/03/16/facebook-bans-cambridge-analytica.html",
+    "https://www.theguardian.com/uk-news/2018/mar/31/catalan-carla-ponsati-crowdfunding-scotland-spain",
     # "https://www.theguardian.com/world/2018/may/09/iran-fires-20-rockets-syria-golan-heights-israel",
     # "https://edition.cnn.com/2018/05/11/middleeast/iran-israel-syria-intl/index.html",
     # "https://www.nytimes.com/2018/05/13/world/middleeast/iran-nuclear-mideast-conflict.html",
-    "https://www.cnn.com/2018/05/14/politics/donald-trump-mueller-probe/index.html"
+    # "https://www.cnn.com/2018/05/14/politics/donald-trump-mueller-probe/index.html"
 ]
 
-def updateTimelineTopics(timeline):
-    # get the timeline's articles
-    articles = db.articles.find({'_id': {'$in': timeline['articles']}})
-    
-    # set the timeline's topics from its articles
-    timeline["topics"] = classifier.getTimelineTopicsFromArticles(articles)
 
-
-def addLinks(links):
+def addArticles(links):
+    waitlistedArticles = []
     for link in links:
         # feed the link to textrazor and make an article object from it
         article = labeler.extractIntoArticle(link)
@@ -43,18 +32,29 @@ def addLinks(links):
             print(similarity)
 
             # if the correlation is high enough, add the article to the timeline
-            if similarity > 0.36:   # magic number
-                print("Added", article['title'], 'to', 'timelIne', timeline['title'])
+            if similarity > 0.35:   # magic number
+                print("ADDED", article['title'], ' TO TIMELINE ', timeline['title'])
                 timeline['articles'].append(article_id)
-                updateTimelineTopics(timeline)
-                db.timelines.update_one({'_id': timeline['_id']}, {"$set": timeline}, upsert=False)
+                # update the timeline's topics from all of its articles
+                timeline['topics'] = classifier.getTimelineTopicsFromArticles(db.getArticlesFromTimeline(timeline))
+
+                db.updateTimeline(timeline)
                 foundAtLeastOneTimeline = True
         
-        # add an article to the waitlist if  it wasn't added to any timeline
+        # add an article to the waitlist if it wasn't added to any timeline
         if foundAtLeastOneTimeline == False:
             article['waitlisted'] = True
             article['waitlist_TTL'] = 3
-            db.articles.update_one({'_id': article['_id']}, {"$set": article}, upsert=False)
-            print("Article", article['title'], "was waitlisted")
+            db.updateArticle(article)
+            waitlistedArticles.append(article)
+            print("WAITLISTED ARTICLE", article['title'])
 
-addLinks(links)
+    # handle the waitlist
+    if len(waitlistedArticles) > 0:
+        print("\nNow handling the waitlist...")
+        addedTimelines, addedArticles = classifier.handleWaitlistArticles(waitlistedArticles)
+        for timeline in addedTimelines: db.timelines.insert(timeline)
+        for article in addedArticles:   db.updateArticle(article)
+
+
+addArticles(links)

@@ -1,16 +1,8 @@
 from pymongo import MongoClient
-import labeler, classifier
+import labeler, classifier, database
 labeler = labeler.Labeler()
-
-# connect to local database
-db = MongoClient('mongodb://localhost:27017')['newstime-dev']
-# connect to production database
-# db = MongoClient('mongodb://ds129428.mlab.com:29428/')['newstime-prd']
-# db.authenticate('karl', 'karl') # username and passw
-
-db.articles.remove({})
-db.timelines.remove({})
-# db.waitlist.remove({})
+db = database.Database()
+db.cleanCollections()
 
 
 articleLinksPerTimeline = [
@@ -57,7 +49,7 @@ for timeline in newTimelines:
         timeline["articles"].append(article_id)
     
     # get the timeline's articles
-    articles = db.articles.find( { '_id': {'$in': timeline['articles']} })
+    articles = db.getArticlesFromTimeline(timeline)
 
     # set the timeline's topics from its articles
     timeline["topics"] = classifier.getTimelineTopicsFromArticles(articles)

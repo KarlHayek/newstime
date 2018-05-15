@@ -1,11 +1,11 @@
-# The classifier takes two lists of labels extracted by the labeler and decided whether they belong to the same news story or not.
-
-import math
+import classifier, matplotlib.pyplot as plt
+from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 from collections import OrderedDict
 
-topicsWeight = 0.1
 
 def getSimilarityScore(topics1, topics2, topic_scores1=[], topic_scores2=[]):
+    topicsWeight = 0.1
+    
     if len(topics1) == 0 or len(topics2) == 0:
         print("Error: one of the passed topics arrays is empty!")
         return
@@ -42,3 +42,69 @@ def getTimelineTopicsFromArticles(articles):
             timelineTopics.append(keyword)
 
     return timelineTopics
+
+
+def handleWaitlistArticles(waitlist):
+    articles = [article for article in waitlist]
+    articleTopics = [art['topics'] for art in articles]
+    articleTitles = [art['title'] for art in articles]
+    articleIndices = [i for i in range(len(articleTitles))]
+    addedTimelines, addedArticles = [], []
+    
+    # condensed 1-d matrix of size (n choose 2) representing the distances between all articles
+    distances, comparisonNames = [], []
+
+    m = len(articleTopics)
+    for i in range(0, m - 1):
+        for j in range(i + 1, m):
+            distances.append(1 / classifier.getSimilarityScore(articleTopics[i], articleTopics[j]))
+            comparisonNames.append(articleTitles[i] + " | WITH | " + articleTitles[j])  # for testing
+
+    # Calculate the linkage (hierarchical clustering)
+    mergings = linkage(distances, method='average')
+
+    ## for testing:
+    ## for i in range(len(distances)):
+    ##     print(comparisonNames[i], ":", distances[i])
+    # for i in range(len(articleTitles)):
+    #     print(articleIndices[i], ":", articleTitles[i])
+    # dendrogram(mergings, labels=articleIndices)
+    # plt.show()
+
+
+    # height is how 'good' we want our clusters to be
+    height = 8
+    # get labels from the different obtained clusters
+    labels = fcluster(mergings, height, criterion='distance')
+
+    # make a dict of cluster labels that represent article indices
+    articlesPerLabels = dict((x, []) for x in labels)
+    for i, label in enumerate(labels):
+        articlesPerLabels[label].append(i)
+
+
+    for articleIndices in articlesPerLabels.values():
+        # if there are 3+ articles in the cluster, add it as a timeline to the timelines collection
+        if len(articleIndices) < 3:
+            continue
+
+        # get the full articles from their indices
+        arts = [articles[index] for index in articleIndices]
+        topics = classifier.getTimelineTopicsFromArticles(arts)
+
+        timeline = {
+            'title': ' '.join(topics[:4]),
+            'details': ' '.join(topics[:8]),
+            'articles': [art['_id'] for art in arts],
+            'topics': topics,
+        }
+
+        addedTimelines.append(timeline)
+        print("Added timeline", timeline['title'], "from", len(articleIndices), "articles")
+
+        # remove the added articles from the waitlist
+        for art in arts:
+            art['waitlisted'] = False
+            addedArticles.append(art)
+    
+    return addedTimelines, addedArticles
