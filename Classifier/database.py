@@ -6,7 +6,7 @@ class Database:
         self.db = MongoClient('mongodb://localhost:27017')['newstime-dev']
         # connect to production database
         # self.db = MongoClient('mongodb://ds129428.mlab.com:29428/')['newstime-prd']
-        # self.db.authenticate('karl', 'karl') # username and passw
+        # self.db.authenticate('karl', 'karl') # authenticate with username and passw
 
         self.articles = self.db.articles
         self.timelines = self.db.timelines
@@ -22,6 +22,11 @@ class Database:
     
     def updateArticle(self, article):
         return self.articles.update_one({'_id': article['_id']}, {"$set": article}, upsert=False)
+
+    def isArticleInDatabase(self, link):
+        # find instead of find_one to get a cursor instead of a document, and limit to 1 result to improve performance
+        return self.articles.find({'link': link}).limit(1).count() > 0
+
 
     def cleanCollections(self):
         self.articles.remove({})

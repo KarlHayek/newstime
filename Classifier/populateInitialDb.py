@@ -7,7 +7,6 @@ db.cleanCollections()
 
 articleLinksPerTimeline = [
     [
-        "https://www.washingtontimes.com/news/2018/apr/12/donald-trumps-wall-is-getting-push-back-from-congr/",
         "https://www.cnn.com/2018/05/12/politics/washington-lobbying-trump-era/index.html",
         "https://www.theguardian.com/world/2018/may/13/us-sanctions-european-countries-iran-deal-donald-trump",
         "https://www.theatlantic.com/magazine/archive/2017/10/will-donald-trump-destroy-the-presidency/537921/",
@@ -61,8 +60,3 @@ for timeline in newTimelines:
     index+=1
 
 print("Done")
-
-# tl = db.timelines.find_one()
-# articles = db.articles.find({'_id': {'$in': tl['articles']}})
-# topics = classifier.getTimelineTopicsFromArticles(articles)
-# print(topics)

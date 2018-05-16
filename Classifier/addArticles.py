@@ -3,24 +3,15 @@ import labeler, classifier, database
 labeler = labeler.Labeler()
 db = database.Database()
 
-# articles to add
-links = [
-    # "http://money.cnn.com/2018/03/21/technology/mark-zuckerberg-cambridge-analytica-response/index.html",
-    # "https://www.usatoday.com/story/tech/2018/03/21/facebook-ceo-mark-zuckerberg-finally-speaks-cambridge-analytica-we-need-fix-breach-trust/445791002/",
-    "https://www.cnbc.com/2018/03/16/facebook-bans-cambridge-analytica.html",
-    "https://www.theguardian.com/uk-news/2018/mar/31/catalan-carla-ponsati-crowdfunding-scotland-spain",
-    # "https://www.theguardian.com/world/2018/may/09/iran-fires-20-rockets-syria-golan-heights-israel",
-    # "https://edition.cnn.com/2018/05/11/middleeast/iran-israel-syria-intl/index.html",
-    # "https://www.nytimes.com/2018/05/13/world/middleeast/iran-nuclear-mideast-conflict.html",
-    # "https://www.cnn.com/2018/05/14/politics/donald-trump-mueller-probe/index.html"
-]
-
 
 def addArticles(links):
     waitlistedArticles = []
     for link in links:
         # feed the link to textrazor and make an article object from it
         article = labeler.extractIntoArticle(link)
+        if len(article['topics']) == 0:
+            print("Error:", link, "returned 0 topics"); continue
+
         # add the article to the articles collection
         article_id = db.articles.insert_one(article).inserted_id
 
@@ -32,7 +23,7 @@ def addArticles(links):
             print(similarity)
 
             # if the correlation is high enough, add the article to the timeline
-            if similarity > 0.35:   # magic number
+            if similarity > 0.34:   # magic number
                 print("ADDED", article['title'], ' TO TIMELINE ', timeline['title'])
                 timeline['articles'].append(article_id)
                 # update the timeline's topics from all of its articles
@@ -44,7 +35,7 @@ def addArticles(links):
         # add an article to the waitlist if it wasn't added to any timeline
         if foundAtLeastOneTimeline == False:
             article['waitlisted'] = True
-            article['waitlist_TTL'] = 3
+            article['waitlist_TTL'] = 5
             db.updateArticle(article)
             waitlistedArticles.append(article)
             print("WAITLISTED ARTICLE", article['title'])
@@ -52,9 +43,24 @@ def addArticles(links):
     # handle the waitlist
     if len(waitlistedArticles) > 0:
         print("\nNow handling the waitlist...")
-        addedTimelines, addedArticles = classifier.handleWaitlistArticles(waitlistedArticles)
+
+        addedTimelines, addedArticles = classifier.handleWaitlistArticles(db.getWaitlistedArticles())
+        # insert the clustered timelines and update the added articles (remove from waitlist)
         for timeline in addedTimelines: db.timelines.insert(timeline)
         for article in addedArticles:   db.updateArticle(article)
 
 
-addArticles(links)
+
+
+# articles to add
+links = [
+    # "http://money.cnn.com/2018/03/21/technology/mark-zuckerberg-cambridge-analytica-response/index.html",
+    # "https://www.usatoday.com/story/tech/2018/03/21/facebook-ceo-mark-zuckerberg-finally-speaks-cambridge-analytica-we-need-fix-breach-trust/445791002/",
+    # "https://www.cnbc.com/2018/03/16/facebook-bans-cambridge-analytica.html",
+    # "https://www.theguardian.com/uk-news/2018/mar/31/catalan-carla-ponsati-crowdfunding-scotland-spain",
+    # "https://www.theguardian.com/world/2018/may/09/iran-fires-20-rockets-syria-golan-heights-israel",
+    # "https://edition.cnn.com/2018/05/11/middleeast/iran-israel-syria-intl/index.html",
+    # "https://www.nytimes.com/2018/05/13/world/middleeast/iran-nuclear-mideast-conflict.html",
+    # "https://www.cnn.com/2018/05/14/politics/donald-trump-mueller-probe/index.html"
+]
+# addArticles(links)

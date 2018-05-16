@@ -10,15 +10,17 @@ class Labeler:
         self.client = textrazor.TextRazor(extractors=["topics"])  #instance of TextRazor class
 
     def extractIntoArticle(self, url):
+        self.client.set_cleanup_return_raw(True)    # for getting the title
+        self.response = self.client.analyze_url(url)
+
         article = {
             'link': url,
-            'title': self.getTitle(url),
+            'title': self.getTitle(),
             'topics':[],
             'topic_scores': [],
             'waitlisted': False,
         }
 
-        self.response = self.client.analyze_url(url)
 
         for topic in self.response.topics():
             if topic.score < 0.4:   # magic number
@@ -28,9 +30,8 @@ class Labeler:
 
         return article
 
-    def getTitle(self, url):
-        self.client.set_cleanup_return_raw(True)
-        raw_text = self.client.analyze_url(url).raw_text
+    def getTitle(self):
+        raw_text = self.response.raw_text
         soup = BeautifulSoup(raw_text, "lxml")
         return soup.title.string
 
