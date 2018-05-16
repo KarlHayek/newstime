@@ -13,7 +13,7 @@ const TimelineSchema = new Schema({
     articles: [{
         type: Schema.Types.ObjectId, ref: 'articles'
     }],
-    date_created: {
+    date: {
         type: Date,
         default: Date.now
     },

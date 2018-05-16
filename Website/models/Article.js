@@ -14,7 +14,7 @@ const ArticleSchema = new Schema({
     // stories: [{
     //     type: Schema.Types.ObjectId, ref: 'Story'
     // }],
-    date_event: {
+    date_added: {
         type: Date,
         default: Date.now
     },
@@ -23,8 +23,14 @@ const ArticleSchema = new Schema({
     }],
     topic_scores: [{
         type: Number
-    }]
-
+    }],
+    waitlisted: {
+        type: Boolean
+    },
+    waitlist_TTL :{
+        type: Number,
+        default: 5
+    }
 });
 
 const Article = mongoose.model('articles', ArticleSchema)

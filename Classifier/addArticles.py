@@ -13,7 +13,7 @@ def addArticles(links):
             print("Error:", link, "returned 0 topics"); continue
 
         # add the article to the articles collection
-        article_id = db.articles.insert_one(article).inserted_id
+        article_id = db.insertArticle(article)
 
         # print("Now dealing with", article['title'], "...")
         foundAtLeastOneTimeline = False
@@ -46,7 +46,7 @@ def addArticles(links):
 
         addedTimelines, addeddArticles, removedArticles = classifier.handleWaitlistArticles(db.getWaitlistedArticles())
         # insert the clustered timelines and update the added articles (remove from waitlist)
-        for timeline in addedTimelines: db.timelines.insert(timeline)
+        for timeline in addedTimelines: db.insertTimeline(timeline)
         for article in addeddArticles: db.updateArticle(article)
         for article in removedArticles: db.removeArticle(article)
 

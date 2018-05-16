@@ -17,6 +17,12 @@ class Database:
     def getWaitlistedArticles(self):
         return self.articles.find({'waitlisted': True})
 
+    def insertTimeline(self, timeline):
+        return self.timelines.insert_one(timeline).inserted_id
+
+    def insertArticle(self, article):
+        return self.articles.insert_one(article).inserted_id
+
     def updateTimeline(self, timeline):
         self.timelines.update_one({'_id': timeline['_id']}, {"$set": timeline}, upsert=False)
     

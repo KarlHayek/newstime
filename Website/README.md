@@ -4,4 +4,4 @@ A website that displays the news in timelines where events are sorted chronologi
 
 To launch the web app locally execute the command `npm install && npm start`.
 
-(Note to self: to push this folder (instead of the main dir) to heroku do `git push --force heroku `git subtree split --prefix Website`:master` in the main dir).
+(Note to self: to push this folder (instead of the main dir) to heroku execute in the main directory: git push --force heroku \`git subtree split --prefix Website\`:master).

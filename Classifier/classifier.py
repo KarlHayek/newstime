@@ -44,6 +44,7 @@ def getTimelineTopicsFromArticles(articles):
     return timelineTopics
 
 
+
 # for testing:
 def visualizeCluster(mergings, articleTitles, articleNumbers):
     print("Visualizing clustering...")
@@ -53,6 +54,7 @@ def visualizeCluster(mergings, articleTitles, articleNumbers):
         print(articleNumbers[i], ":", articleTitles[i])
     dendrogram(mergings, labels=articleNumbers)
     plt.show()
+
 
 
 def handleWaitlistArticles(waitlist):

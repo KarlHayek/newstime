@@ -30,8 +30,7 @@ newTimelines = [
 ]
 
 
-
-
+print("Initializing database...")
 index = 0
 for timeline in newTimelines:
     timeline["articles"] = []
@@ -42,7 +41,7 @@ for timeline in newTimelines:
         article = labeler.extractIntoArticle(link)
 
         # add the article to the articles collection
-        article_id = db.articles.insert_one(article).inserted_id
+        article_id = db.insertArticle(article)
         
         # add the article's id to the timeline's list of articles
         timeline["articles"].append(article_id)
@@ -55,8 +54,8 @@ for timeline in newTimelines:
     # print(timeline['topics'])
 
     # add the timeline to the timelines collection
-    db.timelines.insert_one(timeline)
+    db.insertTimeline(timeline)
     print("finished timeline", index)
     index+=1
 
-print("Done")
+print("Done initializing database")
