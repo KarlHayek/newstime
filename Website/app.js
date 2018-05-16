@@ -52,7 +52,7 @@ app.get('/timelines', (req, res) => {
             if (req.query.search) {
                 searchResponse = `Found ${timelines.length} search results for '${req.query.search}':`;
             }
-            timelines.forEach(timeline => { timeline.topics = timeline.topics.slice(0,10) })
+            timelines.forEach(timeline => { timeline.topics = timeline.topics.slice(0,8) })
             res.render('timelines/index', {
                 timelines: timelines,
                 searchResponse: searchResponse

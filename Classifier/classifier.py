@@ -44,7 +44,23 @@ def getTimelineTopicsFromArticles(articles):
     return timelineTopics
 
 
+# for testing:
+def visualizeCluster(mergings, articleTitles, articleNumbers):
+    print("Visualizing clustering...")
+    ## for i in range(len(distances)):
+    ##     print(comparisonNames[i], ":", distances[i])
+    for i in range(len(articleTitles)):
+        print(articleNumbers[i], ":", articleTitles[i])
+    dendrogram(mergings, labels=articleNumbers)
+    plt.show()
+
+
 def handleWaitlistArticles(waitlist):
+    linkageMethod = 'average'   # linkage method in hierarchical clustering
+    maxClusterHeight = 3        # how 'good' we want our clusters to be
+    minNbArticlesPerTimeline = 4
+    # Note: 'average', 3, and 4 for the above variables seems to work well
+
     # get the articles from the waitlist
     articles = [article for article in waitlist]
     if len(articles) == 0:
@@ -53,7 +69,7 @@ def handleWaitlistArticles(waitlist):
     articleTopics = [art['topics'] for art in articles]
     articleTitles = [art['title'] for art in articles]
     articleNumbers = [i for i in range(len(articleTitles))]
-    addedTimelines, addedArticles = [], []
+    addedTimelines, addedArticles, removedArticles  = [], [], []
     
 
     # condensed 1-d matrix of size (n choose 2) representing the distances between all articles
@@ -67,22 +83,11 @@ def handleWaitlistArticles(waitlist):
     
     # Calculate the linkage (hierarchical clustering)
     # Note: using average linkage along with a maxHeight of 4 seems to work well
-    mergings = linkage(distances, method='average')
+    mergings = linkage(distances, method = linkageMethod)
 
-    # MaxHeight is how 'good' we want our clusters to be
-    MaxHeight = 3
+    
     # get labels from the different obtained clusters
-    labels = fcluster(mergings, MaxHeight, criterion='distance')
-
-    # for testing:
-    def visualizeCluster():
-        print("visualizing")
-        ## for i in range(len(distances)):
-        ##     print(comparisonNames[i], ":", distances[i])
-        for i in range(len(articleTitles)):
-            print(articleNumbers[i], ":", articleTitles[i])
-        dendrogram(mergings, labels=articleNumbers)
-        plt.show()
+    labels = fcluster(mergings, maxClusterHeight, criterion='distance')
 
 
     # make a dict of cluster labels that represent article indices
@@ -91,12 +96,17 @@ def handleWaitlistArticles(waitlist):
         articlesPerLabels[label].append(i)
     
     for articleIndices in articlesPerLabels.values():
-        # if there are 3+ articles in the cluster, add it as a timeline to the timelines collection
-        if len(articleIndices) < 3:
+        arts = [articles[index] for index in articleIndices]
+
+        # add cluster as a timeline to the timelines collection if it has a min nb
+        # of articles in the cluster, else decrease its TTL
+        if len(articleIndices) < minNbArticlesPerTimeline:
+            for art in arts:
+                art['waitlist_TTL'] -= 1
+                if art['waitlist_TTL'] <= 0: removedArticles.append()
             continue
 
         # get the full articles from their indices
-        arts = [articles[index] for index in articleIndices]
         topics = classifier.getTimelineTopicsFromArticles(arts)
 
         timeline = {
@@ -114,5 +124,5 @@ def handleWaitlistArticles(waitlist):
             art['waitlisted'] = False
             addedArticles.append(art)
     
-    visualizeCluster()
-    return addedTimelines, addedArticles
+    # visualizeCluster(mergings, articleTitles, articleNumbers)
+    return addedTimelines, addedArticles, removedArticles

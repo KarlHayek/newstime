@@ -44,11 +44,11 @@ def addArticles(links):
     if len(waitlistedArticles) > 0:
         print("\nNow handling the waitlist...")
 
-        addedTimelines, addedArticles = classifier.handleWaitlistArticles(db.getWaitlistedArticles())
+        addedTimelines, addeddArticles, removedArticles = classifier.handleWaitlistArticles(db.getWaitlistedArticles())
         # insert the clustered timelines and update the added articles (remove from waitlist)
         for timeline in addedTimelines: db.timelines.insert(timeline)
-        for article in addedArticles:   db.updateArticle(article)
-
+        for article in addeddArticles: db.updateArticle(article)
+        for article in removedArticles: db.removeArticle(article)
 
 
 
