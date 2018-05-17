@@ -72,7 +72,6 @@ app.get('/timelines/show/:id', (req, res) => {
             res.render('timelines/show', {
                 timeline: timeline
             });
-            timeline['articles'].forEach(art => {console.log(art['date_added'])})
         })
 })
 

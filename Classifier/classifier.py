@@ -47,7 +47,7 @@ def getTimelineTopicsFromArticles(articles):
 
 # for testing:
 def visualizeCluster(mergings, articleTitles, articleNumbers):
-    print("Visualizing clustering...")
+    print("\nVisualizing clustering...")
     ## for i in range(len(distances)):
     ##     print(comparisonNames[i], ":", distances[i])
     for i in range(len(articleTitles)):
@@ -57,7 +57,7 @@ def visualizeCluster(mergings, articleTitles, articleNumbers):
 
 
 
-def handleWaitlistArticles(waitlist):
+def handleWaitlistArticles(waitlist, visualize=False):
     linkageMethod = 'average'   # linkage method in hierarchical clustering
     maxClusterHeight = 3        # how 'good' we want our clusters to be
     minNbArticlesPerTimeline = 4
@@ -119,12 +119,12 @@ def handleWaitlistArticles(waitlist):
         }
     
         addedTimelines.append(timeline)
-        print("ADDED TIMELINE", timeline['title'], "FROM", len(articleIndices), "ARTICLES")
+        print("ADDED TIMELINE", timeline['title'], "FROM ARTICLES", articleIndices)
 
         # remove the added articles from the waitlist
         for art in arts:
             art['waitlisted'] = False
             addedArticles.append(art)
     
-    # visualizeCluster(mergings, articleTitles, articleNumbers)
+    if visualize: visualizeCluster(mergings, articleTitles, articleNumbers)
     return addedTimelines, addedArticles, removedArticles

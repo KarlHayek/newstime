@@ -1,13 +1,18 @@
 from pymongo import MongoClient
 
 class Database:
-    def __init__(self):
+    def __init__(self, environment='local'):
         # connect to local database
-        self.db = MongoClient('mongodb://localhost:27017')['newstime-dev']
+        if environment == 'local':
+            self.db = MongoClient('mongodb://localhost:27017')['newstime-dev']
         # connect to production database
-        # self.db = MongoClient('mongodb://ds129428.mlab.com:29428/')['newstime-prd']
-        # self.db.authenticate('karl', 'karl') # username and passw
-
+        elif environment == 'production':
+            self.db = MongoClient('mongodb://ds129428.mlab.com:29428/')['newstime-prd']
+            self.db.authenticate('karl', 'karl') # username and passw
+        else:
+            print("Error: database environment must either be local or production!")
+            return
+            
         self.articles = self.db.articles
         self.timelines = self.db.timelines
 
@@ -34,7 +39,7 @@ class Database:
         return self.articles.find({'link': link}).limit(1).count() > 0
 
     def removeArticle(self, article):
-        self.articles.remove({'_id': article('_id')})
+        self.articles.remove({'_id': article['_id']})
 
     def cleanCollections(self):
         self.articles.remove({})

@@ -16,7 +16,7 @@ const ArticleSchema = new Schema({
     // }],
     date_added: {
         type: Date,
-        default: Date.now
+        // default: Date.now
     },
     topics: [{
         type: String

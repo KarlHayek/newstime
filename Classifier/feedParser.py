@@ -1,11 +1,9 @@
-import feedparser, database, addArticles
-db = database.Database()
+from feedparser import parse
 
-def getLinksFromRSS():
-    print("Fetching article links from RSS feeds...")
+def getLinksFromRSS(database):
     # Grabs the rss feed url's and return them as a list
     def getArticleLinks(rss_url):
-        newsitems = feedparser.parse(rss_url)['items']
+        newsitems = parse(rss_url)['items']
 
         return [newsitem['link'] for newsitem in newsitems][:20] # 20 links per rss feed
 
@@ -20,11 +18,4 @@ def getLinksFromRSS():
     for key, rss_url in newsurls.items():
         allLinks.extend(getArticleLinks(rss_url))
 
-    return [link for link in allLinks if not db.isArticleInDatabase(link)]
-
-
-linksToAdd = getLinksFromRSS()
-
-print("Now adding article links to database...")
-# linksToAdd = linksToAdd[:10]  # don't add all the links, for testing
-addArticles.addArticles(linksToAdd)
+    return [link for link in allLinks if not database.isArticleInDatabase(link)]

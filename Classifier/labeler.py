@@ -1,6 +1,6 @@
 # The labeler takes a url of a news article, extracts topics from the text and writes them in a text file.
 
-import textrazor, pprint, datetime
+import textrazor, datetime
 from bs4 import BeautifulSoup
 
 textrazor.api_key = "5634740d9e8d89a14374edaa305c207bd6eda5918bbe233634beb092"
@@ -15,7 +15,7 @@ class Labeler:
 
         article = {
             'link': url,
-            'title': self.getTitle(),
+            'title': self.getTitle(self.response),
             'topics':[],
             'topic_scores': [],
             'waitlisted': False,
@@ -31,8 +31,11 @@ class Labeler:
 
         return article
 
-    def getTitle(self):
-        raw_text = self.response.raw_text
-        soup = BeautifulSoup(raw_text, "lxml")
-        return soup.title.string
-
+    def getTitle(self, response):
+        try:
+            raw_text = response.raw_text
+            soup = BeautifulSoup(raw_text, "lxml")
+            return soup.title.string.strip()
+        except:
+            print("Error: couldn't retrieve article title")
+            return response.link
